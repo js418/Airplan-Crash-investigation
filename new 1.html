@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>CS590DV Final Project - Jie Song</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="https://dc-js.github.io/dc.js/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="https://dc-js.github.io/dc.js/css/dc.css" />
+ 
+  <style>
+
+    body {
+        font-size: 16px;
+        line-height: 10px;
+        color: #525252;
+    }
+	
+	p{
+	font: 14px sans-serif;
+	color: black;
+	}
+	
+	#pie-chart{
+	   margin-top: 20px;
+	}
+		
+    #country .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-45deg);
+	  font-weight:bold;
+    }
+	
+	#manufacture .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-35deg);
+	  font-weight:bold;
+    }
+	
+	select{
+	   float:left;
+	   width: 100px;
+	}
+	
+	label{
+	    float:left;
+		font-weight:bold;
+	}
+	
+	.text_note{
+	   font: 16px sans-serif;
+	   fill: red;
+	   font-weight: bold;
+	}
+	
+  </style>
+</head>
+
+<body>
+    <div class="container" style="width:1500">
+	    <h1 align="center">Airplane Crashes - Fly or not fly?</h1>
+		
+		<p>
+		<br>
+		Every air crash was a disaster and a sad story. Here I want to show some statistical information for air crashes and do some initiatory investigation study on the air crashes.
+		</p>
+		
+		<h3>I. When and Where?</h3>
+		
+		<p> The data is Airplane Crashes and Fatalities Since 1908 from <a href="https://opendata.socrata.com/Government/Aviation-accidents/x8vp-aycu">Socrata</a> (total: 5269). 
+		Select one or more countries in the World Map to see what happended. Or select a range of years or the category of airplan to check the information for the Aircrashes.
+		Here, I divide the airplane into 3 categories: Military, Passenger (civil aircraft for passengers) and Cargo/Service (air transport for goods or service). "Reset" is available for each visualization.
+		<br>
+		<br>
+        <span style="color: red; font-weight:bold;">Note</span>: Part I and Part II is connected and interactive. Better to "reset" every visualization in both two parts before you investigate on a particaular visualization.		
+		<br>
+		<br>
+		</p>
+		<div id="world-chart" style="height:700" align="center">		  
+		  <div id="world-opt" align = "left">
+		    <label for = "country-color">Color</label> 
+            <select id="country-color"  class="dropdown" onchange="draw_graphs()">
+               <option selected="selected" value = "Category20">Category20</option>
+			   <option value = "Category20b">Category20b</option>
+			   <option value = "Category20c">Category20c</option>
+            </select>
+		  </div>		  
+          <strong>1908 - 2009 Airplane Crashes by Country (color: amount of crashes)</strong>
+          <a class="reset" href="javascript:worldChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+          <span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span>
+		  <div class="clearfix"></div>				  
+        </div>
+		
+		<div id = "time-chart" align= "center">
+			<strong>Airplane Crashes By Year</strong>
+			<a class="reset" href="javascript:timeChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+            <span class="reset" style="display: none;"></span>
+		    <div class="clearfix"></div>
+		</div>
+		
+		<div style="float:right">
+		  <div class="title" align= "center" style = "font-weight:bold">Airplane Categories</div>
+		  <div id = "pie-chart">
+		    <a class="reset" href="javascript:pieChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+            <span class="reset" style="display: none;"></span>
+		    <div class="clearfix"></div>
+		  </div>
+		</div>
+		
+		<div class="row">
+		    
+            <div id="year-chart">
+			    <a class="reset" href="javascript:yearChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                <span class="reset" style="display: none;"></span>
+		        <div class="clearfix"></div>
+            </div>
+            <p class="muted pull-right" style="margin-right: 15px;">select a time range</p>
+        </div>
+		
+		<p>
+		The first the birth of flight was in 1903. The Airline industry developed rapidly since the mid-20th Century. As you can see, the aircrahses also 
+		increased after the mid-20th Centry. However, the number of crashes decreased in the recent 20 years. Among all the crashes, Passenger category airplane took more than 70% percentage (truly for most countries), 
+		which may mean the airplane is most used in the field of commercial transportation. We all know that World War II lasted from 1939 to 1945, which explained the peak for Military aircrahses between 1940 to 1945.
+		In 1917, which is the time for World War I, there also was a small peak for military air crashes. However, at that time, the airplanes were not common and could not be used in the war for many countries.
+		The Passenger aircrashes significantly decreased since the late 20th Centry, does it means that it is more safe to fly now?
+		</p>
+		
+		<h3>II.Statistical Information</h3>
+		
+		
+		<div class="row">
+		<div id="line-charts" align = "center">
+		
+		  <div id = "fatalityChart" style="float:left">
+			 <div class="title" align= "center" style = "font-weight:bold">Aircrash Fatalities</div>
+			 <div id="f-opt" align = "left">
+			  <label for = "fatality-measure">Measure By</label> 
+              <select id="fatality-measure"  class="dropdown" onchange="draw_graphs()">
+                <option selected="selected" value = "sum">Sum</option>
+			    <option value = "average">Average</option>
+              </select>
+			 </div>
+			<div id = "fatality"></div>
+		  </div>
+		  
+		  <div id = "deathrateChart" style="float:right">
+			<div class="title" align= "center" style = "font-weight:bold">Aircrash Death Rate</div>			 
+			<div id = "death-rate"></div>
+		  </div>
+		
+		</div>
+		</div>
+		
+		<div class="row">
+		<div id="bar-charts">
+		    <div id = "countryChart" style="float:left">
+			    			 
+			    <div id = "country">
+				   <div class="title" align= "center" style = "font-weight:bold">Top Aircrash Countries</div>
+				   <a class="reset" href="javascript:topCountryChart.filterAll();dc.redrawAll();" style="display: none;float:right;">reset</a>
+                   <span class="reset" style="display: none;"></span>
+		           <div class="clearfix"></div>
+				</div>
+		    </div>
+
+            <div id = "manuChart" style="float:right">			    			 
+			    <div id = "manufacture">
+				   <div class="title" align= "center" style = "font-weight:bold">Top Aircrash Manufactures</div>
+				   <a class="reset" href="javascript:topManuChart.filterAll();dc.redrawAll();" style="display: none;float:right;">reset</a>
+                   <span class="reset" style="display: none;"></span>
+		           <div class="clearfix"></div>
+				</div>
+		    </div>
+			
+		</div>
+		</div>
+		<p>
+		<br>
+		The total crash number is 5269 from 1908-2009. The company has most air crashes is Douglas Aircraft Company, which was found in 1921. The continent has the most 
+		air crashes is North America, then Europe. The number of crashes happened in USA is 1432, almost one third of the total crashes in the world, which is much
+		higher than other countries. In the top 10 aircrash countries, most countries are highly developed, such as USA, Russia(USSR was counted as Russia), Canada, France and England, 
+		or with high population, such as China and India. However, Brazil and Colombia (click the bar to investigate them individually) are also in top 5, 
+		which is interesting and the reasons need to be investigated. Although the death rate is really high for the aircrashes, the total number of fatalities
+		in the crashes per year is really small(only about 2000 people died in aircrahses per year), compared to 7.5 billions of the whole population. As far as you know, only in USA, the 
+        number for <a href="https://www-fars.nhtsa.dot.gov/Main/index.aspx">highway motor vehicle traffic crashes</a> is almost 30,000 per year. Thus, again, fly is safe?
+		</p>
+		<div>
+		    <h3>III. Air Crash Investigation</h3>
+			
+			<p>
+            <span style="color: red; font-weight:bold;">Note</span>: "Country","Category" and "Manufacture" options are independent. Choose any one of the three options, the other 
+            two options are "All".			
+		    <br>
+			</P>
+			
+			
+			    <div id="wordcloud-opt">				
+				    <label for = "cloud-category">Category</label> 
+                    <select id="cloud-category"  class="wcloud" data-inline="true">
+                        <option selected="selected" value = "All">All</option>
+			            <option value = "Military">Military</option>
+			            <option value = "Passenger">Passenger</option>
+						<option value = "Cargo/Service">Cargo/Service</option>
+                    </select>
+					
+					<label for = "cloud-country">Country</label> 
+                    <select id="cloud-country"  class="wcloud" data-inline="true">
+                        <option selected="selected" value = "All">All</option>
+			            <option value = "us">United States</option>
+			            <option value = "russia">Russia</option>
+						<option value = "brazil">Brazil</option>
+						<option value = "canada">Canada</option>
+			            <option value = "colombia">Colombia</option>
+						<option value = "china">China</option>
+						<option value = "france">France</option>
+						<option value = "england">England</option>
+			            <option value = "india">India</option>
+						<option value = "indonesia">Indonesia</option>
+                    </select>
+					
+					<label for = "cloud-manu">Manufacture</label> 
+                    <select id="cloud-manu"  class="wcloud" data-inline="true">
+                        <option selected="selected" value = "All">All</option>
+			            <option value = "do">Douglas</option>
+			            <option value = "bo">Boeing</option>
+						<option value = "an">Antonov</option>
+						<option value = "ce">Cessna</option>
+						<option value = "de">de Havilland Canada</option>
+                    </select>
+				    
+		            <label for = "cloud-color">Color</label> 
+                    <select id="cloud-color"  class="wcloud" data-inline="true">
+                        <option selected="selected" value = "Category20">Category20</option>
+			            <option value = "Category20b">Category20b</option>
+			            <option value = "Category20c">Category20c</option>
+                    </select>
+					
+                    <label for = "cloud-rotate">Rotation</label> 
+                    <select id="cloud-rotate"  class="wcloud" data-inline="true">
+                        <option selected="selected" value = "90">90</option>
+			            <option value = "30">30</option>
+			            <option value = "60">60</option>
+						<option value = "-30">-30</option>
+						<option value = "-60">-60</option>
+                    </select>
+                    <label for = "cloud-font">Font</label> 
+                    <select id="cloud-font"  class="wcloud" data-inline="true">
+                        <option selected="selected" value = "Impact">Impact</option>
+			            <option value = "Arial">Arial</option>
+			            <option value = "Comic Sans MS">Comic Sans MS</option>
+						<option value = "Lucida Sans Unicode">Lucida Sans Unicode</option>
+						<option value = "Trebuchet MS">Trebuchet MS</option>
+                    </select>
+					
+		        </div>
+
+				<svg></svg>
+  
+				<p>
+			     <br>
+			     The word cloud shows the high frequency words(without common stop words) that appeared in the crash summary. We can see that the most common key words for 
+			     the all crashes are - pilot, engine, runway,failure and landing; for passenger air crashes are - pilot, engine, runway,failure and landing; 
+			     for military air crashes - air, engine, land, shot, struck and killed; and for Cargo/Service - pilot, runway, engine and failure. From these, we can
+			     conclude that most crashes for commercial transportation were probably caused by pilot failure or engine problem, while for the military aircrashes, thee
+       		     were mostly caused by shot down of the airplanes. Besides, the most possible aircrash location is the runway, especially during the airplane landing.	
+			     <br>
+				 In part II, we want to know why Brazil and Colombia had so many aircrahes. From the word cloud, for Brazil, there seems no special reasons for aircrashes,
+				  while for Colombia, three new common words appear: mountain, cargo and route, which may explain something. Besides, for Douglas Company, which is the top 1
+				  air crash company, the key words are: pilot, engine, mountain, approach, route and failure.
+				</p>
+			    
+			</div>
+			
+			
+			
+			
+		</div>
+		
+		
+		
+    </div>
+
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter2/1.4.6/crossfilter.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.2.0/dc.js"></script>
+	<script type="text/javascript" src="colorbrewer.min.js"></script>
+	<script type="text/javascript" src="d3.layout.cloud.js"></script>
+	
+	<script type="text/javascript">
+	
+	    var dateFormat = d3.time.format("%m/%d/%Y");
+		var timeFormat = d3.time.format("%H:%M");
+		var formatPercent = d3.format(",.2%");
+		
+		var worldChart = dc.geoChoroplethChart("#world-chart");
+		var timeChart = dc.seriesChart("#time-chart");
+		var pieChart = dc.pieChart("#pie-chart");
+		var yearChart = dc.barChart("#year-chart");
+		var fatalityChart = dc.lineChart("#fatality");
+		var deathRateChart = dc.lineChart("#death-rate");
+		var topCountryChart = dc.barChart("#country");
+		var topManuChart = dc.barChart("#manufacture");
+        
+	    var g = d3.select("svg")
+                  .attr("width", 1200)
+                  .attr("height", 600)
+                  .append("g")
+                  .attr("transform", "translate(500,320)");
+				  
+		var g_n = g.append("text")
+		           .attr("class","text_note")
+                   .attr("transform", "translate("+ (-400) +","+ (-300) +")");
+				  
+		var tooltip = d3.select("body")
+	      .append("div")
+	      .style("position", "absolute")
+	      .style("font-family", "sans-serif")
+	      .style("font-size", "20px")
+		  .style("font-weight", "bold")
+	      .style("visibility", "hidden");		  
+		
+		function draw_graphs(){
+		
+		    d3.csv("clean_data.csv", function (csv) {
+			
+					
+			csv.forEach(function (d) {
+                d.dd = dateFormat.parse(d.Date);
+				d.year = d3.time.year(d.dd);
+				d.time = timeFormat.parse(d.Time);
+                d.Aboard = +d.Aboard;
+				d.Fatalities = +d.Fatalities;
+            });
+			
+			var data = crossfilter(csv);
+			
+			// variables for geo map
+			var country = data.dimension(function (d) {
+                return d["Country"];
+            });			
+			var country_color = document.getElementById("country-color").value;			
+			var c_color;
+			if (country_color == "Category20"){
+			   c_color = d3.scale.category20();
+			}
+			else if (country_color == "Category20b"){
+			    c_color = d3.scale.category20b();
+			}
+            else if (country_color == "Category20c"){
+			    c_color = d3.scale.category20c();
+			}
+            else {
+			    c_color = colorbrewer[country_color][9];
+			};           		
+		    var countryByCount = country.group().reduceCount();
+			
+			
+			// variables for time-series chart
+			var categoryByYear = data.dimension(function(d){
+			    return [d.Category, d.year];				
+			});
+            var categoryByYearGroup = categoryByYear.group().reduceCount();
+			
+           	// variables for pie chart
+            var category = data.dimension(function(d){
+			    return d.Category;				
+			});			
+			var categoryByCount = category.group().reduceCount();
+			
+			// variables for year chart
+			var year = data.dimension(function(d){
+			    return d.year;				
+			});
+			var yearByCount = year.group().reduceCount();
+			
+			// variables for fatality line chart
+            var fatalityByYear = year.group().reduce(
+            /* callback for when data is added to the current filter results */
+            function (p, v) {
+              ++p.count;
+              p.sum+= +v.Fatalities;
+              p.average = Math.round(p.sum / p.count);
+              return p;
+            },
+            /* callback for when data is removed from the current filter results */
+              function (p, v) {
+              --p.count;
+              p.sum-= +v.Fatalities;
+              p.average = Math.round(p.sum / p.count);
+              return p;
+            },
+            /* initialize p */
+            function () {
+              return {
+                  count: 0,
+                  sum: 0,
+                  average: 0};
+            }
+            );
+            var fatality_measure = document.getElementById("fatality-measure").value; 
+
+    		// variables for death rate line chart
+            var deathrateByYear = year.group().reduce(
+            /* callback for when data is added to the current filter results */
+            function (p, v) {
+              p.fatality += +v.Fatalities;
+			  p.aboard += +v.Aboard			                
+              return p;
+            },
+            /* callback for when data is removed from the current filter results */
+            function (p, v) {
+              p.fatality -= +v.Fatalities;
+			  p.aboard -= +v.Aboard              
+              return p;
+            },
+            /* initialize p */
+            function () {
+              return {
+                  aboard: 0,
+                  fatality: 0};
+            }
+            );
+			
+			// variables for top country chart
+			var topCountry19 = countryByCount.top(19);
+			var topC19 = [];
+			for (i = 0; i < topCountry19.length; i++) { 
+                   topC19.push(topCountry19[i].key);
+            };
+			var topCountry = data.dimension(function (d) {
+                if (topC19.indexOf(d.Country) < 0){
+				    return "Others";
+				}
+				return d.Country;
+            });
+			
+			var topCountryGroup = topCountry.group();
+			
+			// variables for top manufacture chart
+			topM19 = ["Douglas","Boeing","Antonov","Cessna","de Havilland Canada  Twin Otter","McDonnell Douglas","Curtiss","Beechcraft","Piper","Tupolev","Ilyushin","Junkers","Convair","Lockheed  Hercules","Fokker  Friendship","Lockheed","Fairchild","Britten-Norman  Islander","Yakovlev"]			
+			var topManu = data.dimension(function (d) {
+                if (topM19.indexOf(d.Manufacture) < 0){
+				    return "Others";
+				}
+				return d.Manufacture;
+            });
+			var topManuGroup = topManu.group();
+			
+			
+			
+			
+			d3.json("world_countries.json", function (wJson) {
+			
+			    // geo map				
+			    worldChart.width(1000)
+                    .height(500)
+                    .dimension(country)
+                    .group(countryByCount)
+					.colors(c_color)
+                    .colorDomain([d3.min(worldChart.data(),worldChart.valueAccessor()),d3.max(worldChart.data(),worldChart.valueAccessor())])
+					.projection(d3.geo.equirectangular())
+                    .overlayGeoJson(wJson.features, "Country", function (d) {					    
+                        return d.properties.name;})						
+                    .title(function (d) {
+                        return "Country: " + d.key + "\nTotal Crashes: " + d.value;
+                    });
+					
+				timeChart.width(650)
+                         .height(400)
+						 .margins({top: 50, right: 50, bottom: 50, left: 50})
+						 .dimension(categoryByYear)
+                         .group(categoryByYearGroup)
+						 .brushOn(false)
+						 .ordinalColors(["#1b9e77","#d95f02","#7570b3"])
+						 .x(d3.time.scale().domain([new Date(1908, 01, 01), new Date(2010, 12, 31)]))
+						 .xUnits(d3.time.years)
+						 .xAxisLabel("Year")
+						 .yAxisLabel("Crash Numbers")
+						 .elasticY(true)
+						 .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
+						 .seriesAccessor(function(d) {return d.key[0];})
+                         .keyAccessor(function(d) {return d.key[1];})
+                         .valueAccessor(function(d) {return +d.value;})
+						 .renderHorizontalGridLines(true)
+                         .title(function (d) { return "Category: " + d.key[0] + "\nYear: " + d.key[1].getFullYear() + "\nTotal crashes: " + d.value; })
+                         .legend(dc.legend().x(200).y(30).itemHeight(10).gap(3).horizontal(2).legendWidth(300).itemWidth(100))
+						 .xAxis().ticks(30);
+						 
+				pieChart.width(250).height(400)
+                        .dimension(category)
+                        .group(categoryByCount)
+						.ordinalColors(["#1b9e77","#d95f02","#7570b3"])
+						.colorDomain(["Cargo/Service", "Military", "Passenger"])
+						.legend(dc.legend().x(50).y(10).itemHeight(15).gap(5))
+						.on('pretransition', function(chart) {
+                            chart.selectAll('.dc-legend-item text')
+                                 .text('')
+                                 .append('tspan')
+								 .attr('font-size', '15')
+                                 .text(function(d) { return d.name; })
+                                 .append('tspan')
+                                 .attr('x', 160)
+								 .attr('font-weight','bold')
+                                 .attr('text-anchor', 'end')
+                                 .text(function(d) { return d.data; });								 
+							chart.selectAll('text.pie-slice')
+							     .text(function(d) {
+							        if(d.data.value == 0){
+									   return '';}
+									return d.data.key + ' ' + dc.utils.printSingleValue((d.endAngle - d.startAngle) / (2*Math.PI) * 100) + '%';                                   
+                            })
+                        });
+                
+                yearChart.width(1000).height(100)
+                    .margins({top: 20, right: 50, bottom: 20, left: 50})
+                    .dimension(year)
+                    .group(yearByCount)
+                    .centerBar(true)
+					.colors("#42f477")
+                    .gap(0)
+					.elasticX(true)
+					.elasticY(true)
+                    .x(d3.time.scale().domain([new Date(1908, 01, 01), new Date(2009, 12, 31)]))
+                    .xUnits(d3.time.years)
+					.controlsUseVisibility(true)
+					.xAxis().ticks(30);
+                yearChart.yAxis().ticks(5);
+				
+				fatalityChart.width(450).height(300)
+				    .margins({top: 20, right: 20, bottom: 50, left: 50}) 
+                    .x(d3.time.scale().domain([new Date(1908, 01, 01), new Date(2009, 12, 31)]))
+			        .xUnits(d3.time.years)
+                    .yAxisLabel("Fatalities")
+                    .xAxisLabel("Year")
+					.colors("red")
+                    .elasticY(true)
+					.renderArea(true)
+					.brushOn(false)
+                    .renderDataPoints(true)
+                    .dimension(year)
+                    .group(fatalityByYear)
+                    .valueAccessor(function(d) {return +d.value[fatality_measure] ;})
+                    .renderHorizontalGridLines(true)
+					.renderVerticalGridLines(true)
+					.title(function (d) { return "Year: " + d.key.getFullYear() + "\nFatalities: " + d.value[fatality_measure]; });
+					
+				deathRateChart.width(450).height(360)
+				    .margins({top: 50, right: 20, bottom: 50, left: 50}) 
+                    .x(d3.time.scale().domain([new Date(1908, 01, 01), new Date(2009, 12, 31)]))
+			        .xUnits(d3.time.years)
+                    .yAxisLabel("Death Rate")
+                    .xAxisLabel("Year")
+					.colors("purple")
+                    .elasticY(true)
+					.renderArea(true)
+					.brushOn(false)
+                    .renderDataPoints(true)
+                    .dimension(year)
+                    .group(deathrateByYear)
+                    .valueAccessor(function(d) {
+					    if (d.value.aboard == 0){
+			                return 0;
+			            }
+			            else{
+			              return (d.value.fatality / d.value.aboard);
+			            };})
+                    .renderHorizontalGridLines(true)
+					.renderVerticalGridLines(true)
+					.title(function (d) { return "Year: " + d.key.getFullYear() + 
+					"\nAboard: " + d.value.aboard +
+					"\nFatalities: " + d.value.fatality +
+					"\nDeath Rate: " + formatPercent(d.value.fatality / d.value.aboard); });
+					
+				topCountryChart.width(500)
+                    .height(400)
+					.margins({top: 0, right: 20, bottom: 70, left: 50})
+                    .dimension(topCountry)
+                    .group(topCountryGroup)
+					.colors(d3.scale.category20())
+					.colorAccessor(function(d) {return d.value; })
+					.valueAccessor(function(d){
+					    if (d.key == "Others")
+						   return 1432;
+						return d.value;
+					})
+                    .x(d3.scale.ordinal())
+                    .xUnits(dc.units.ordinal)
+					.yAxisLabel("Aircrash Number")
+                    .xAxisLabel("Country")
+					.ordering(function(d) { return -d.value; })
+                    .title(function (d) { return "Country: " + d.key + "\nAircrahes: " + d.value; });
+					
+				topManuChart.width(400)
+                    .height(400)
+					.margins({top: 0, right: 0, bottom: 100, left: 50})
+                    .dimension(topManu)
+                    .group(topManuGroup)
+					.colors(d3.scale.category20b())
+					.colorAccessor(function(d) {return d.value; })
+					.valueAccessor(function(d){
+					    if (d.key == "Others")
+						   return 956;
+						return d.value;
+					})
+                    .x(d3.scale.ordinal())
+                    .xUnits(dc.units.ordinal)
+					.yAxisLabel("Aircrash Number")
+					.xAxisLabel("Manufacture")
+					.ordering(function(d) { return -d.value; })
+                    .title(function (d) { return "Manufacture: " + d.key + "\nAircrahes: " + d.value; });		
+					
+			    dc.renderAll();			
+			});			
+		    })
+		};				
+			
+        function draw_wordcloud(){
+		
+		   var cloud_color = document.getElementById("cloud-color").value;			
+		   var fill;
+		   var s;
+			if (cloud_color == "Category20"){
+			   fill = d3.scale.category20();
+			}
+			else if (cloud_color == "Category20b"){
+			    fill = d3.scale.category20b();
+			}
+            else if (cloud_color == "Category20c"){
+			    fill = d3.scale.category20c();
+			};
+            
+            var cloud_category = document.getElementById("cloud-category").value;			
+			var file;
+			if (cloud_category == "All"){
+			   file = "all_word_cloud.csv";
+			   s = 18;
+			   
+			}
+			else if (cloud_category == "Passenger"){
+			    file = "passenger_word_cloud.csv";
+				s = 12;
+			}
+            else if (cloud_category == "Military"){
+			    file = "military_word_cloud.csv";
+				s = 1;
+			}
+			else if (cloud_category == "Cargo/Service"){
+			    file = "cargo_service_word_cloud.csv";
+				s = 3.5;
+			};
+
+			var cloud_rotate = document.getElementById("cloud-rotate").value;			
+			var rotation;
+			rotation = +cloud_rotate;
+			
+			var cloud_font = document.getElementById("cloud-font").value;
+			
+			var cloud_country = document.getElementById("cloud-country").value;
+			if (cloud_country == "All"){
+			    file = "all_word_cloud.csv";
+				s =20;
+			}
+			else if (cloud_country == "us"){
+			    file = cloud_country + ".csv";
+				s = 8;
+			}
+			else if (cloud_country == "russia"){
+			    file = cloud_country + ".csv";
+				s = 1;
+			}
+			else if (cloud_country == "brazil"){
+			    file = cloud_country + ".csv";
+				s = 1;
+			}
+			else if (cloud_country == "colombia"){
+			    file = cloud_country + ".csv";
+				s = 0.7;
+			}
+			else if (cloud_country == "china"){
+			    file = cloud_country + ".csv";
+				s = 0.7;
+			}
+			else{
+			    file = cloud_country + ".csv";
+				s = 0.5;
+			};
+			
+			var cloud_manu = document.getElementById("cloud-manu").value;
+			if (cloud_manu == "All"){
+			    file = "all_word_cloud.csv";
+				s =20;
+			}
+			else if (cloud_manu == "do"){
+			    file = cloud_manu + ".csv";
+				s = 3;
+			}
+			else if (cloud_manu == "bo"){
+			    file = cloud_manu + ".csv";
+				s = 1.5;
+			}
+			else if (cloud_manu == "an"){
+			    file = cloud_manu + ".csv";
+				s = 0.8;
+			}
+			else if (cloud_manu == "ce"){
+			    file = cloud_manu + ".csv";
+				s = 0.8;
+			}
+			else{
+			    file = cloud_manu + ".csv";
+				s = 0.5;
+			};
+		
+        d3.csv(file, function(data) {
+            data.forEach(function(d) {
+                d.size = +d.size;
+            });
+			
+			g_n.text("Top 10 frequency words: " + data[0].text + ", " + data[1].text + ", " + data[2].text + ", " + data[3].text + ", " + data[4].text + ", " + data[5].text + ", " + data[6].text + ", " + data[7].text + ", " + data[8].text + ", " + data[9].text);
+			
+            d3.layout.cloud().size([950, 550])
+              .words(data)
+              .padding(5)
+              .rotate(function() {
+                return~~ (Math.random() * 2) * rotation;
+               })
+              .font("Impact")
+              .fontSize(function(d) {
+                   return d.size/s;
+              })
+              .on("end", draw)
+              .start();   
+
+            function draw(words) {
+			    
+				g.selectAll(".c_text").remove();
+                
+                var g_t = g.selectAll(".c_text")
+                          .data(data);
+				  
+                var g_e = g_t.enter().append("text")
+				          .attr("class","c_text");
+						  
+                  g_e.style("font-size", function(d) {
+                      return d.size + "px";
+                   })
+                  .style("font-family", cloud_font)
+                  .style("fill", function(d, i) {				      
+                      return fill(i);
+                   })
+                  .attr("text-anchor", "middle")
+                  .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                   })
+                  .text(function(d) {
+                       return d.text;
+                  })
+				  .on("mouseover", function(d){
+		                return tooltip.style("visibility", "visible")
+						              .style("left", (d3.event.pageX) + "px")
+			                          .style("top", d3.event.pageY + "px")                                     									  
+                                      .html("Appear Times: " + d.size);})
+					.on("mouseout", function(d){
+		                return tooltip.style("visibility", "hidden")});
+				  
+				 g_t.exit().remove(); 
+				  
+				};
+				  				
+				  
+			document.getElementById("cloud-color").onchange = function() {
+			    draw_wordcloud();
+			};
+			
+			document.getElementById("cloud-category").onchange = function() {
+			    draw_wordcloud();
+			};
+			
+			document.getElementById("cloud-rotate").onchange = function() {
+			    draw_wordcloud();
+			};
+			
+			document.getElementById("cloud-font").onchange = function() {
+			    draw_wordcloud();
+			};
+			
+			document.getElementById("cloud-country").onchange = function() {
+			    draw_wordcloud();
+			};
+			
+			document.getElementById("cloud-manu").onchange = function() {
+			    draw_wordcloud();
+			};
+			
+        });
+		};
+		
+		
+		draw_graphs();
+		draw_wordcloud();
+		
+	    
+	
+	</script>
+	
+	
+</body>
+</html>
